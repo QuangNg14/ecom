@@ -34,7 +34,7 @@ func (s *APIsServer) Run() error {
 
 	// Register routes for product (new service)
 	productStore := product.NewStore(s.db) // this is from the product table in the database
-	productHandler := product.NewHandler(productStore)
+	productHandler := product.NewHandler(productStore, userStore)
 	productHandler.RegisterRoutes(subrouter)
 
 	log.Println("Starting server on", s.addr)

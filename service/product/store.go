@@ -38,11 +38,11 @@ func (s *Store) GetProducts() ([]types.Product, error) {
 
 func scanRowsIntoProduct(rows *sql.Rows) (types.Product, error) {
 	p := types.Product{}
-	err := rows.Scan(&p.ID, &p.Name, &p.Price, &p.Quantity, &p.CreatedAt, &p.Description, &p.ImageURL)
+	err := rows.Scan(&p.ID, &p.Name, &p.Price, &p.Quantity, &p.CreatedAt, &p.Description, &p.Image)
 	return p, err
 }
 
-func (s *Store) CreateProduct(product types.Product) error {
-	_, err := s.db.Exec("INSERT INTO products (name, description, price, quantity, image) VALUES (?, ?, ?, ?, ?)", product.Name, product.Description, product.Price, product.Quantity, product.ImageURL)
+func (s *Store) CreateProduct(product types.CreateProductPayload) error {
+	_, err := s.db.Exec("INSERT INTO products (name, price, quantity, description, image) VALUES (?, ?, ?, ?, ?)", product.Name, product.Price, product.Quantity, product.Description, product.Image)
 	return err
 }

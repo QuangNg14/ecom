@@ -4,23 +4,28 @@ import (
 	"log"
 	"net/http"
 
+	"github.com/QuangNg14/ecom/service/auth"
 	"github.com/QuangNg14/ecom/types"
 	"github.com/QuangNg14/ecom/utils"
 	"github.com/gorilla/mux"
 )
 
 type Handler struct {
-	store types.ProductStore
+	store     types.ProductStore
+	userStore types.UserStore
 }
 
-func NewHandler(store types.ProductStore) *Handler {
-	return &Handler{store: store}
+func NewHandler(store types.ProductStore, userStore types.UserStore) *Handler {
+	return &Handler{store: store, userStore: userStore}
 }
 
 func (h *Handler) RegisterRoutes(router *mux.Router) {
 	log.Println("Registering /products route")
 	router.HandleFunc("/products", h.handleGetProducts).Methods("GET")
-	router.HandleFunc("/products", h.handleCreateProduct).Methods("POST")
+	// router.HandleFunc("/products", h.handleCreateProduct).Methods("POST")
+
+	// admin routes
+	router.HandleFunc("/products", auth.WithJWTAuth(h.handleCreateProduct, h.userStore)).Methods("POST")
 }
 
 func (h *Handler) handleGetProducts(w http.ResponseWriter, r *http.Request) {
@@ -46,19 +51,11 @@ func (h *Handler) handleCreateProduct(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	product := types.Product{
-		Name:        payload.Name,
-		Description: payload.Description,
-		Price:       payload.Price,
-		Quantity:    payload.Quantity,
-		ImageURL:    payload.Image,
-	}
-
-	err = h.store.CreateProduct(product)
+	err = h.store.CreateProduct(payload)
 	if err != nil {
 		utils.WriteError(w, http.StatusInternalServerError, err)
 		return
 	}
 
-	utils.WriteJSON(w, http.StatusCreated, product)
+	utils.WriteJSON(w, http.StatusCreated, payload)
 }

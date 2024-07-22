@@ -14,7 +14,7 @@ type UserStore interface {
 
 type ProductStore interface {
 	GetProducts() ([]Product, error)
-	CreateProduct(Product) error
+	CreateProduct(CreateProductPayload) error
 }
 
 type OrderStore interface {
@@ -58,7 +58,7 @@ type User struct {
 	LastName  string `json:"lastName"`
 	Email     string `json:"email"`
 	Password  string `json:"-"`
-	CreatedAt string `json:"created_at"`
+	CreatedAt string `json:"createdAt"`
 }
 
 // implement a better Quantity field for concurrent requests
@@ -67,9 +67,9 @@ type Product struct {
 	Name        string  `json:"name"`
 	Price       float64 `json:"price"`
 	Quantity    int     `json:"quantity"`
-	CreatedAt   string  `json:"created_at"`
+	CreatedAt   string  `json:"createdAt"`
 	Description string  `json:"description"`
-	ImageURL    string  `json:"image_url"`
+	Image       string  `json:"image"`
 }
 
 type CartCheckoutItem struct {
